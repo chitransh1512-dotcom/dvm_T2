@@ -1,0 +1,21 @@
+{% extends "metro/base.html" %}
+
+{% block content %}
+<h2>Welcome to the Metro Ticket System</h2>
+
+<p>
+    This system allows you to purchase metro tickets, manage your wallet,
+    and view your past tickets.
+</p>
+
+{% if not user.is_authenticated %}
+    <p>
+        <a href="{% url 'login' %}">Login</a> to continue.
+    </p>
+{% else %}
+    <p>
+        Go to <a href="{% url 'metro:buy_ticket' %}">Buy Ticket</a>
+        to purchase your next ride.
+    </p>
+{% endif %}
+{% endblock %}

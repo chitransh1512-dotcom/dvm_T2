@@ -1,0 +1,16 @@
+# Environment
+.env
+
+# AWS keys
+*.pem
+
+# Python
+__pycache__/
+*.pyc
+
+# Django
+staticfiles/
+media/
+
+# Docker
+postgres_data/

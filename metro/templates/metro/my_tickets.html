@@ -1,0 +1,24 @@
+{% extends "metro/base.html" %}
+
+{% block content %}
+<h2>My Tickets</h2>
+
+{% if tickets %}
+    <ul>
+        {% for t in tickets %}
+            <li>
+                <strong>{{ t.ticket_code }}</strong><br>
+                From: {{ t.from_station.name }}<br>
+                To: {{ t.to_station.name }}<br>
+                Price: ₹{{ t.price }}<br>
+                Status: {{ t.get_status_display }}<br>
+                Purchased: {{ t.created_at|date:"d M Y H:i" }}
+            </li>
+            <br>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>You have no tickets.</p>
+{% endif %}
+
+{% endblock %}

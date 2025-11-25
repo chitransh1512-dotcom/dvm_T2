@@ -1,0 +1,16 @@
+{% extends "metro/base.html" %}
+
+{% block content %}
+<h2>Add Money to Wallet</h2>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <button type="submit">Add Money</button>
+</form>
+
+<p>
+    <a href="{% url 'metro:buy_ticket' %}">Back to Buy Ticket</a>
+</p>
+{% endblock %}

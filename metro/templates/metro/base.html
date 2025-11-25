@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Metro System</title>
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav>
+        {% if user.is_authenticated %}
+            <p>
+                Hello {{ user.username }} |
+                <a href="{% url 'metro:buy_ticket' %}">Buy Ticket</a> |
+                <a href="{% url 'metro:my_tickets' %}">My Tickets</a> |
+                <a href="{% url 'metro:add_money' %}">Add Money</a> |
+                <a href="{% url 'logout' %}">Logout</a>
+            </p>
+        {% else %}
+            <p>
+                <a href="{% url 'login' %}">Login</a> |
+                <a href="{% url 'signup' %}">Signup</a> {# Optional if you create signup #}
+            </p>
+        {% endif %}
+    </nav>
+
+    <hr>
+
+    <!-- Django Messages -->
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        <hr>
+    {% endif %}
+
+    <!-- Main Content -->
+    {% block content %}
+    {% endblock %}
+
+</body>
+</html>

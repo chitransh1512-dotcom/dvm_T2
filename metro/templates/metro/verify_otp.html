@@ -1,0 +1,21 @@
+{% extends "metro/base.html" %}
+
+{% block content %}
+<h2>Verify OTP</h2>
+
+<p>
+    An OTP has been sent to your registered email.
+    Please enter it below to complete your ticket purchase.
+</p>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <button type="submit">Verify</button>
+</form>
+
+<p>
+    <a href="{% url 'metro:buy_ticket' %}">Go back</a>
+</p>
+{% endblock %}

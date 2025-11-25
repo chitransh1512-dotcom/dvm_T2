@@ -1,0 +1,16 @@
+{% extends "metro/base.html" %}
+
+{% block content %}
+<h2>Logged Out</h2>
+
+<p>You have been successfully logged out.</p>
+
+<p>
+    <a href="/accounts/login/">Login again</a>
+</p>
+
+<p>
+    Or use Google:
+    <a href="/auth/google/login/">Login with Google</a>
+</p>
+{% endblock %}
