@@ -16,4 +16,3 @@ class MetroConfig(AppConfig):
 
         post_save.connect(create_profile, sender=User)
 
-        Group.objects.get_or_create(name="Scanner")
