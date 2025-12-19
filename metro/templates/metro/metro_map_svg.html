@@ -1,0 +1,226 @@
+{% extends "metro/base.html" %}
+
+{% block content %}
+<h2>Metro Map</h2>
+
+<style>
+    text {
+        font-size: 14px;
+        font-family: Arial, sans-serif;
+    }
+
+    .station-label {
+        pointer-events: none;
+    }
+
+    .station-node {
+        cursor: pointer;
+        transition: transform 0.15s ease;
+    }
+
+    .station-node:hover {
+        transform: scale(1.2);
+    }
+
+    .selected-from {
+        stroke: green !important;
+        stroke-width: 4 !important;
+    }
+
+    .selected-to {
+        stroke: red !important;
+        stroke-width: 4 !important;
+    }
+
+    .route-box {
+        margin-top: 20px;
+        padding: 10px;
+        border: 1px dashed #444;
+        max-width: 600px;
+    }
+</style>
+
+<p>
+    Click one station for <strong>Pick-up</strong>, then another for
+    <strong>Drop-off</strong> to view the highlighted route.
+</p>
+
+<svg id="metro-svg"
+     width="1400"
+     height="900"
+     style="background:#fafafa; border:1px solid #ccc;">
+
+    <!-- === HIGHLIGHTED ROUTE (TOP LAYER) === -->
+    <polyline
+        id="highlight-path"
+        fill="none"
+        stroke="gold"
+        stroke-width="10"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        style="filter: drop-shadow(0 0 8px gold);"
+        visibility="hidden">
+    </polyline>
+
+    <!-- === METRO LINES + STATIONS === -->
+    {% for ld in line_data %}
+
+        <!-- Metro line -->
+        <polyline
+            points="{{ ld.points }}"
+            fill="none"
+            stroke="{{ ld.line.color|default:'#007bff' }}"
+            stroke-width="8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            opacity="0.85"
+        />
+
+        <!-- Stations -->
+        {% for st in ld.stations %}
+
+            {% if st.id in interchanges %}
+                <!-- Interchange station (double circle) -->
+                <circle
+                    cx="{{ st.x }}"
+                    cy="{{ st.y }}"
+                    r="11"
+                    fill="white"
+                    stroke="black"
+                    stroke-width="3"
+                    class="station-node"
+                    data-id="{{ st.id }}"
+                    data-name="{{ st.name }}"
+                />
+                <circle
+                    cx="{{ st.x }}"
+                    cy="{{ st.y }}"
+                    r="6"
+                    fill="white"
+                    stroke="black"
+                    stroke-width="2"
+                />
+            {% else %}
+                <!-- Normal station -->
+                <circle
+                    cx="{{ st.x }}"
+                    cy="{{ st.y }}"
+                    r="6"
+                    fill="white"
+                    stroke="black"
+                    stroke-width="2"
+                    class="station-node"
+                    data-id="{{ st.id }}"
+                    data-name="{{ st.name }}"
+                />
+            {% endif %}
+
+            <!-- Station label -->
+            <text
+                x="{{ st.label_x }}"
+                y="{{ st.label_y }}"
+                class="station-label">
+                {{ st.name }}
+            </text>
+
+        {% endfor %}
+    {% endfor %}
+</svg>
+
+<!-- === ROUTE INFO PANEL === -->
+<div class="route-box">
+    <p><strong>Pick-up:</strong> <span id="from-name">-</span></p>
+    <p><strong>Drop-off:</strong> <span id="to-name">-</span></p>
+    <div id="route-output"></div>
+</div>
+
+<script>
+let fromStation = null;
+let toStation = null;
+
+function clearSelection() {
+    document.querySelectorAll(".station-node").forEach(el => {
+        el.classList.remove("selected-from");
+        el.classList.remove("selected-to");
+    });
+    document.getElementById("highlight-path")
+            .setAttribute("visibility", "hidden");
+}
+
+function updateRouteBox(data) {
+    const box = document.getElementById("route-output");
+    if (!data) {
+        box.innerHTML = "";
+        return;
+    }
+    box.innerHTML = `
+        <p><strong>Route:</strong> ${data.route.join(" → ")}</p>
+        <p><strong>Distance:</strong> ${data.distance} stations</p>
+        <p><strong>Price:</strong> ₹${data.price}</p>
+    `;
+}
+
+document.querySelectorAll(".station-node").forEach(el => {
+    el.addEventListener("click", () => {
+        const id = el.dataset.id;
+        const name = el.dataset.name;
+
+        // FIRST CLICK → PICK-UP
+        if (!fromStation) {
+            fromStation = { id, name };
+            toStation = null;
+            clearSelection();
+            el.classList.add("selected-from");
+            document.getElementById("from-name").innerText = name;
+            document.getElementById("to-name").innerText = "-";
+            updateRouteBox(null);
+            return;
+        }
+
+        // SECOND CLICK → DROP-OFF
+        if (!toStation) {
+            if (id === fromStation.id) return;
+
+            toStation = { id, name };
+            el.classList.add("selected-to");
+            document.getElementById("to-name").innerText = name;
+
+            fetch(`/api/shortest-route/?from=${fromStation.id}&to=${toStation.id}`)
+                .then(r => r.json())
+                .then(data => {
+                    if (!data.ok) {
+                        updateRouteBox(null);
+                        return;
+                    }
+
+                    updateRouteBox(data);
+
+                    const points = data.points
+                        .map(p => `${p.x},${p.y}`)
+                        .join(" ");
+
+                    const poly = document.getElementById("highlight-path");
+                    poly.setAttribute("points", points);
+                    poly.setAttribute("visibility", "visible");
+                });
+
+            return;
+        }
+
+        // THIRD CLICK → RESET & START AGAIN
+        fromStation = { id, name };
+        toStation = null;
+        clearSelection();
+        el.classList.add("selected-from");
+        document.getElementById("from-name").innerText = name;
+        document.getElementById("to-name").innerText = "-";
+        updateRouteBox(null);
+    });
+});
+</script>
+
+{% endblock %}
+
+
+
+

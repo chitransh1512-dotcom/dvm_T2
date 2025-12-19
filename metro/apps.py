@@ -1,9 +1,3 @@
-# from django.apps import AppConfig
-
-
-# class MetroConfig(AppConfig):
-#     default_auto_field = 'django.db.models.BigAutoField'
-#     name = 'metro'
 from django.apps import AppConfig
 
 
@@ -12,9 +6,8 @@ class MetroConfig(AppConfig):
     name = "metro"
 
     def ready(self):
-        # Import signals here so they are registered when Django starts
         from django.db.models.signals import post_save
-        from django.contrib.auth.models import User
+        from django.contrib.auth.models import User, Group
         from .models import Profile
 
         def create_profile(sender, instance, created, **kwargs):
@@ -23,3 +16,4 @@ class MetroConfig(AppConfig):
 
         post_save.connect(create_profile, sender=User)
 
+        Group.objects.get_or_create(name="Scanner")

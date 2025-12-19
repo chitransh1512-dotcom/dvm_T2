@@ -14,41 +14,17 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-# # from django.contrib import admin
-# # from django.urls import path
 
-# # urlpatterns = [
-# #     path('admin/', admin.site.urls),
-# # ]
-# from django.contrib import admin
-# from django.urls import path, include
-
-# urlpatterns = [
-#     path("admin/", admin.site.urls),
-
-#     # Metro app
-#     path("", include("metro.urls", namespace="metro")),
-
-#     # Built-in Django auth views (login, logout)
-#     path("accounts/", include("django.contrib.auth.urls")),
-
-#     # AllAuth (Google OAuth)
-#     path("auth/", include("allauth.urls")),
-# ]
 from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    # Django Admin
     path("admin/", admin.site.urls),
 
-    # Metro app
     path("", include("metro.urls", namespace="metro")),
 
-    # Django built-in login/logout/password reset
     path("accounts/", include("django.contrib.auth.urls")),
 
-    # Django-AllAuth (Google OAuth)
     path("auth/", include("allauth.urls")),
 ]
 

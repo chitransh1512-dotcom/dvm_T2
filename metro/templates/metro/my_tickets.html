@@ -4,17 +4,36 @@
 <h2>My Tickets</h2>
 
 {% if tickets %}
-    <ul>
+    <ul style="list-style:none; padding:0;">
         {% for t in tickets %}
-            <li>
-                <strong>{{ t.ticket_code }}</strong><br>
-                From: {{ t.from_station.name }}<br>
-                To: {{ t.to_station.name }}<br>
-                Price: ₹{{ t.price }}<br>
-                Status: {{ t.get_status_display }}<br>
-                Purchased: {{ t.created_at|date:"d M Y H:i" }}
+            <li style="border:1px solid #ccc; padding:12px; margin-bottom:12px;">
+                <strong>Ticket Code:</strong> {{ t.ticket_code }}<br>
+
+                <strong>From:</strong> {{ t.from_station.name }}<br>
+                <strong>To:</strong> {{ t.to_station.name }}<br>
+
+                <strong>Price:</strong> ₹{{ t.price }}<br>
+
+                <strong>Status:</strong>
+                {% if t.status == "ACTIVE" %}
+                    <span style="color:green;">Active</span>
+                {% elif t.status == "INUSE" %}
+                    <span style="color:orange;">In Use</span>
+                {% elif t.status == "USED" %}
+                    <span style="color:gray;">Used</span>
+                {% else %}
+                    <span style="color:red;">Expired</span>
+                {% endif %}
+                <br>
+
+                <strong>Purchased:</strong>
+                {{ t.created_at|date:"d M Y H:i" }}<br>
+
+                {% if t.status == "ACTIVE" %}
+                    <strong>Expires:</strong>
+                    {{ t.created_at|date:"d M Y H:i" }} + 24 hours
+                {% endif %}
             </li>
-            <br>
         {% endfor %}
     </ul>
 {% else %}
@@ -22,3 +41,4 @@
 {% endif %}
 
 {% endblock %}
+

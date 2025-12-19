@@ -1,11 +1,3 @@
-# from django.contrib import admin
-
-# # Register your models here.
-# from .models import Line, Station, Ticket
-
-# admin.site.register(Line)
-# admin.site.register(Station)
-# admin.site.register(Ticket)
 from django.contrib import admin
 from .models import (
     Station,
@@ -15,12 +7,14 @@ from .models import (
     Ticket,
     Profile
 )
+from .models import Footfall,MetroService
 
 @admin.register(Station)
 class StationAdmin(admin.ModelAdmin):
-    list_display = ("id", "name", "order")
+    list_display = ("id", "name", "order","x","y")
     ordering = ("order",)
     search_fields = ("name",)
+    list_editable = ("x", "y")
 
 
 @admin.register(Line)
@@ -63,3 +57,11 @@ class ProfileAdmin(admin.ModelAdmin):
     list_display = ("user", "wallet")
     search_fields = ("user__username",)
 
+@admin.register(Footfall)
+class FootfallAdmin(admin.ModelAdmin):
+    list_display = ("station", "date", "count")
+    list_filter = ("station", "date")
+
+@admin.register(MetroService)
+class MetroServiceAdmin(admin.ModelAdmin):
+    list_display = ("is_running",)

@@ -18,4 +18,19 @@ urlpatterns = [
 
     # Ticket scanner (API)
     path("scan/", views.scan_ticket, name="scan_ticket"),
+
+    path("profile/", views.edit_profile, name="edit_profile"),
+
+    path("scan/offline-create/", views.offline_create_ticket, name="offline_create_ticket"),
+
+    path("scanner/", views.scanner_dashboard, name="scanner_dashboard"),
+
+    path("map/", views.metro_map_svg, name="metro_map"),
+
+    path("api/shortest-route/", views.api_shortest_route, name="api_shortest_route"),
+    
+    path("api/route-by-ticket/", views.api_route_by_ticket, name="route_by_ticket"),
+
+
+
 ]

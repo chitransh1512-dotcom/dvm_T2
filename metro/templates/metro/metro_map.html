@@ -1,0 +1,43 @@
+{% extends "metro/base.html" %}
+
+{% block content %}
+<h2>Metro Line Map</h2>
+
+<p>This map shows all metro lines and interchange stations.</p>
+
+<style>
+    .line-block {
+        margin-bottom: 30px;
+        padding: 10px;
+        border: 1px solid #ccc;
+    }
+    .station {
+        display: inline-block;
+        padding: 5px 10px;
+        margin: 0 5px;
+        border-radius: 5px;
+        border: 1px solid #999;
+    }
+    .interchange {
+        background: gold;
+        font-weight: bold;
+    }
+</style>
+
+{% for ld in line_data %}
+    <div class="line-block">
+        <h3>{{ ld.line.name }}</h3>
+        
+        {% for st in ld.stations %}
+            <span class="station {% if st.id in interchange_ids %}interchange{% endif %}">
+                {{ st.name }}
+            </span>
+            
+            {% if not forloop.last %}
+                →
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endfor %}
+
+{% endblock %}

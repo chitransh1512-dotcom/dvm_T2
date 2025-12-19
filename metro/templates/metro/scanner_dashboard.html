@@ -1,0 +1,33 @@
+<h2>Ticket Scanner</h2>
+
+<form id="scan-form">
+  <input type="text" id="ticket_code" placeholder="Ticket Code" required />
+  <select id="action">
+    <option value="in">Entry</option>
+    <option value="out">Exit</option>
+  </select>
+  <button type="submit">Scan</button>
+</form>
+
+<p id="result"></p>
+
+<script>
+document.getElementById("scan-form").onsubmit = async function (e) {
+  e.preventDefault();
+
+  const res = await fetch("/scan/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRFToken": "{{ csrf_token }}"
+    },
+    body: JSON.stringify({
+      ticket_code: document.getElementById("ticket_code").value,
+      action: document.getElementById("action").value
+    })
+  });
+
+  const data = await res.json();
+  document.getElementById("result").innerText = JSON.stringify(data);
+};
+</script>

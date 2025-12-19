@@ -1,5 +1,5 @@
 from django.core.mail import send_mail
-
+from allauth.account.models import EmailAddress
 
 def notify_ticket_purchase(user, ticket):
     """
@@ -21,5 +21,14 @@ def notify_ticket_purchase(user, ticket):
         message,
         None,               # Uses DEFAULT_FROM_EMAIL from settings
         [user.email],
-        fail_silently=True  # Keeps it simple for beginners
+        fail_silently=True  
+    )
+
+def get_verified_email(user):
+    return (
+        EmailAddress.objects
+        .filter(user=user, verified=True)
+        .order_by("-primary")
+        .values_list("email", flat=True)
+        .first()
     )
