@@ -1,25 +1,25 @@
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+
+# Load .env
 load_dotenv()
-
-print("DJANGO_DEBUG env =", os.environ.get("DJANGO_DEBUG"))
-print("DJANGO_ALLOWED_HOSTS env =", os.environ.get("DJANGO_ALLOWED_HOSTS"))
-
-
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# CORE SETTINGS
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "dev-secret-key")
 
-DEBUG = os.environ.get("DJANGO_DEBUG", "1") == "1"
+DEBUG = os.environ.get("DJANGO_DEBUG", "0") == "1"
 
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "127.0.0.1 localhost").split()
-print("ALLOWED_HOSTS (parsed) =", ALLOWED_HOSTS)
-
+ALLOWED_HOSTS = os.environ.get(
+    "DJANGO_ALLOWED_HOSTS",
+    "127.0.0.1 localhost"
+).split()
+# EMAIL 
 EMAIL_BACKEND = os.environ.get(
     "EMAIL_BACKEND",
-    "django.core.mail.backends.console.EmailBackend"
+    "django.core.mail.backends.smtp.EmailBackend"
 )
 
 EMAIL_HOST = os.getenv("EMAIL_HOST")
@@ -31,9 +31,9 @@ EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
-
+# APPLICATIONS
 INSTALLED_APPS = [
-    # Django apps
+    # Django core
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -41,34 +41,33 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 
-    # Third-party
+    # Sites + AllAuth
     "django.contrib.sites",
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
     "allauth.socialaccount.providers.google",
 
+    # Local
     "metro.apps.MetroConfig",
-
 ]
 
 SITE_ID = 1
-
 
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
     "allauth.account.auth_backends.AuthenticationBackend",
 ]
-ACCOUNT_LOGOUT_ON_GET = False
+
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
+ACCOUNT_LOGOUT_ON_GET = False
 
+ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 ACCOUNT_AUTHENTICATION_METHOD = "username_email"
-# ACCOUNT_LOGIN_METHODS = {"username", "email"}
-ACCOUNT_EMAIL_REQUIRED = True
 
-
+# MIDDLEWARE
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -80,7 +79,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-
+# URL / TEMPLATE / WSGI
 ROOT_URLCONF = "metro_project.urls"
 
 TEMPLATES = [
@@ -91,7 +90,7 @@ TEMPLATES = [
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.debug",
-                "django.template.context_processors.request",   
+                "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
             ],
@@ -99,25 +98,21 @@ TEMPLATES = [
     },
 ]
 
-
-
 WSGI_APPLICATION = "metro_project.wsgi.application"
 
-
-if os.environ.get("DATABASE_URL"):
-    import dj_database_url
-    DATABASES = {
-        "default": dj_database_url.parse(os.environ["DATABASE_URL"])
+# DATABASE 
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("DB_NAME"),
+        "USER": os.getenv("DB_USER"),
+        "PASSWORD": os.getenv("DB_PASSWORD"),
+        "HOST": os.getenv("DB_HOST", "db"),
+        "PORT": os.getenv("DB_PORT", "5432"),
     }
-else:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
-        }
-    }
+}
 
-
+# PASSWORD VALIDATION
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
@@ -125,19 +120,18 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
-
+# INTERNATIONALIZATION
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "Asia/Kolkata"
 USE_I18N = True
 USE_TZ = True
 
-
+# STATIC FILES
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-
+# DEFAULTS
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# SCANNER / OPERATOR
 OPERATOR_API_KEY = os.environ.get("OPERATOR_API_KEY", "scanner123")
-
-
-
